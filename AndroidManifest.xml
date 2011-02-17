@@ -45,10 +45,10 @@
 		android:anyDensity="true">
 	</supports-screens>
 
-	<!-- 精度が良い位置情報 -->
-	<!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
-	<!-- 精度が悪い位置情報 -->
-	<!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
 	<!-- デバッグ位置情報 -->
 	<!-- <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" /> -->
-</manifest> 
+	<!-- 精度が悪い位置情報 -->
+	<!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
+	<!-- 精度が良い位置情報 -->
+	<!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
+</manifest>

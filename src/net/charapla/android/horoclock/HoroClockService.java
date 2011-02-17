@@ -34,10 +34,11 @@ public class HoroClockService extends Service {
 	private static final int NINE_POS   = -68;
 
 	private static HoroClockProvider mReceiver;
-	//private static LocationManager mLocationManager;
+	private static LocationManager mLocationManager;
+	private static LocationListener mLocationListener;
 
-	//private static double mLatitude  = 0;
-	//private static double mLongitude = 0;
+	private static double mLatitude  = 0;
+	private static double mLongitude = 0;
 
 	private static int mAvailableWidth  = 0;
 	private static int mAvailableHeight = 0;
@@ -227,7 +228,7 @@ public class HoroClockService extends Service {
 		canvas.restore();
 
 		// draw planet sign
-		onHoloDraw(canvas, changed);
+		onHoroDraw(canvas, changed);
 		//testDraw(canvas);
 
 		if (scaled) {
@@ -235,17 +236,18 @@ public class HoroClockService extends Service {
 		}
 	}
 
-	private void onHoloDraw(Canvas canvas, boolean changed) {
+	private void onHoroDraw(Canvas canvas, boolean changed) {
 //		※カルディアンオーダー
 //		土星	木星	火星	太陽	金星	水星	月
 		PlanetCalc planetCalc = new PlanetCalc();
-		double planet_pos[][] = planetCalc.planet_pos(Calendar.getInstance(), PlanetCalc.DEFAULT_PLACE);
-//		if (mLatitude == 0 && mLongitude == 0) {
-//			planet_pos = planetCalc.planet_pos(Calendar.getInstance(), PlanetCalc.DEFAULT_PLACE);
-//		} else {
-//			planet_pos = planetCalc.planet_pos(Calendar.getInstance(), mLatitude, mLongitude);
-//			Log.d(TAG, "{onHoloDraw} Lat=[" + mLatitude + "] Lon=["+ mLongitude + "]");
-//		}
+		double planet_pos[][] = null;
+		//planetCalc.planet_pos(Calendar.getInstance(), PlanetCalc.DEFAULT_PLACE);
+		Log.d(TAG, "{onHoloDraw} Lat=[" + mLatitude + "] Lon=["+ mLongitude + "]");
+		if (mLatitude == 0 && mLongitude == 0) {
+			planet_pos = planetCalc.planet_pos(Calendar.getInstance(), PlanetCalc.DEFAULT_PLACE);
+		} else {
+			planet_pos = planetCalc.planet_pos(Calendar.getInstance(), mLatitude, mLongitude);
+		}
 
 		int x = mAvailableWidth  / 2;
 		int y = mAvailableHeight / 2;
@@ -343,34 +345,37 @@ public class HoroClockService extends Service {
 		}
 	}
 
-	/*
+	@SuppressWarnings("unused")
 	private void initializeLocation() {
 		//位置情報サービスマネージャを取得
 		mLocationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+		if (mLocationManager == null)
+			return;
 
+		final Criteria criteria = new Criteria();
+		criteria.setBearingRequired(false);		// 方位不要
+		criteria.setSpeedRequired(false);		// 速度不要
+		criteria.setAltitudeRequired(false);	// 高度不要
 		//使える中で最も条件にヒットする位置情報サービスを取得する
-		final String bestProvider = mLocationManager.getBestProvider(new Criteria(), true);
+		final String bestProvider = mLocationManager.getBestProvider(criteria, true);
 		//以前に取得した位置情報を取得
 		final Location location = mLocationManager.getLastKnownLocation(bestProvider);
 		//位置情報の取得
 		setLocation(location);
-		final LocationListener locListener = new LocationListener() {
+		mLocationListener = new LocationListener() {
 			@Override
-			public void onStatusChanged(String provider, int status, Bundle extras) {
-			}
+			public void onStatusChanged(String provider, int status, Bundle extras) {	}
 			@Override
-			public void onProviderEnabled(String provider) {
-			}
+			public void onProviderEnabled(String provider) {	}
 			@Override
-			public void onProviderDisabled(String provider) {
-			}
+			public void onProviderDisabled(String provider) {	}
 			@Override
 			public void onLocationChanged(Location location) {
 				setLocation(location);
 			}
 		};
 		//位置更新の際のリスナーを登録 (最少 1時間 1km の変化)
-		mLocationManager.requestLocationUpdates(bestProvider, 60*60*1000, 1000, locListener);
+		mLocationManager.requestLocationUpdates(bestProvider, 1000, 1, mLocationListener);
 	}
 
 	private void setLocation(Location location) {
@@ -379,5 +384,4 @@ public class HoroClockService extends Service {
 			mLongitude = location.getLongitude();
 		}
 	}
-	*/
 }
