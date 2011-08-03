@@ -31,7 +31,7 @@ public class HoroClockService extends Service {
 	private static final String PACKAGE_NAME = "net.charapla.android.horoclock";
 	private static final int CLOCK_SIZE = 294;
 	private static final int ICON_SIZE  = 19;
-	private static final int NINE_POS   = -68;
+	private static final int NINE_POS   = -60;
 
 	private static HoroClockProvider mReceiver;
 	private static LocationManager mLocationManager;
