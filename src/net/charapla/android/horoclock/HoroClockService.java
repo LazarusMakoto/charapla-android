@@ -31,7 +31,7 @@ public class HoroClockService extends Service {
 	private static final String PACKAGE_NAME = "net.charapla.android.horoclock";
 	private static final int CLOCK_SIZE = 294;
 	private static final int ICON_SIZE  = 19;
-	private static final int NINE_POS   = -60;
+	private static final int NINE_POS   = -83;
 
 	private static HoroClockProvider mReceiver;
 	private static LocationManager mLocationManager;
@@ -314,7 +314,7 @@ public class HoroClockService extends Service {
 		}
 	}
 
-	private final static float OVERLAP = 12;
+	private final static float OVERLAP = 16;
 	private int chaldaeanPos(ArrayList<Float> draw_pos, float rot) {
 		int pos = 0;
 		for (float f : draw_pos) {
