@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 		package="net.charapla.android.horoclock"
-		android:versionCode="4"
-		android:versionName="0.1.4">
-	<uses-sdk android:minSdkVersion="4" />
-	<application
+		android:versionCode="5"
+		android:versionName="0.1.5">
+
+    <uses-sdk android:minSdkVersion="4" />
+    <!-- <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/> -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    	
+	<supports-screens
+		android:smallScreens="true"
+		android:normalScreens="true"
+		android:largeScreens="true"
+		android:anyDensity="true">
+	</supports-screens>
+
+   	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name">
 		<!-- ダミーのActivity 
@@ -38,17 +51,4 @@
 
 	</application>
 
-	<supports-screens
-		android:smallScreens="true"
-		android:normalScreens="true"
-		android:largeScreens="true"
-		android:anyDensity="true">
-	</supports-screens>
-
-	<!-- デバッグ位置情報 -->
-	<!-- <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" /> -->
-	<!-- 精度が悪い位置情報 -->
-	<!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
-	<!-- 精度が良い位置情報 -->
-	<!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
 </manifest>

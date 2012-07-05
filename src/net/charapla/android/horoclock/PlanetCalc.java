@@ -836,7 +836,7 @@ public class PlanetCalc {
 		}
 	}
 
-	private void planetCalc1(double jd, double lon, double lat) {
+	private void planetCalc1(double jd, double lat, double lon) {
 		/********************************
 		* obliquity of the ecliptic cal *
 		********************************/
@@ -990,7 +990,7 @@ public class PlanetCalc {
 		double t =  Math.floor(iYear / 100);
 		double jd = Math.floor(iYear * 365.25) - t + Math.floor(t / 4);
 		jd += Math.floor(30.6001 * (iMonth + 1)) + iDay + 1720996.5;
-		jd += iHour / 24 + iMinute / 1440;
+		jd += (double)(iHour) / (double)(24.0) + (double)(iMinute) / (double)(1440.0);
 		jd -= 9.0 / 24.0;
 		return jd;
 	}
@@ -1016,17 +1016,18 @@ public class PlanetCalc {
 	}
 
 	public double[][] planet_pos(Calendar day, double latitude, double longitude) {
+		Log.d(TAG, "Lat=[" + latitude + "] Lon=[" + longitude + "]");
 		double jd = julianDayCalc(day.get(Calendar.YEAR), day.get(Calendar.MONTH) + 1, day.get(Calendar.DATE), day.get(Calendar.HOUR_OF_DAY), day.get(Calendar.MINUTE));
 		planetCalc1(jd, latitude, longitude);
 
-		// 0:太陽 1:月 2:水星 3:金星 4:火星 5:木星 6:土星 7:天王星 8:海王星 9:冥王星
-		double rtn[][] = new double[10][2];		// 太陽 ～ 冥王星
+		// 0:太陽 1:月 2:水星 3:金星 4:火星 5:木星 6:土星 7:天王星 8:海王星 9:冥王星 10:ASC
+		double rtn[][] = new double[11][2];		// 太陽 ～ 冥王星
 //		si:
 //		 0="おひつじ座";	 1="おうし座";		 2="ふたご座";
 //		 3="かに座";		 4="しし座";		 5="おとめ座";
 //		 6="てんびん座";	 7="さそり座";		 8="いて座";
 //		 9="やぎ座";		10="みずがめ座";	11="うお座";
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<rtn.length; i++) {
 			double mm = pcl[i];
 			double si = Math.floor(mm / 1800);
 			mm -= si * 1800;
@@ -1034,7 +1035,7 @@ public class PlanetCalc {
 			mm -= dd * 60;
 
 			mm /= 100;
-			if (pdm[i] < 0) {
+			if (i < pdm.length && pdm[i] < 0) {
 				dd *= -1;
 				mm *= -1;
 			}

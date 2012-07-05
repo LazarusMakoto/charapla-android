@@ -14,7 +14,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,9 +28,12 @@ import android.widget.RemoteViews;
 public class HoroClockService extends Service {
 	private static final String TAG = "[HoroClockService]";
 	private static final String PACKAGE_NAME = "net.charapla.android.horoclock";
-	private static final int CLOCK_SIZE = 294;
-	private static final int ICON_SIZE  = 19;
-	private static final int NINE_POS   = -83;
+//	private static final int CLOCK_SIZE = 294;
+//	private static final int ICON_SIZE  = 19;
+//	private static final int NINE_POS   = -83;
+	private static final int CLOCK_SIZE = 368;
+	private static final int ICON_SIZE  = 24;
+	private static final int NINE_POS   = -104;
 
 	private static HoroClockProvider mReceiver;
 	private static LocationManager mLocationManager;
@@ -54,11 +56,11 @@ public class HoroClockService extends Service {
 	private static int planet_res[][] = {	{6, R.drawable.saturn},	{5, R.drawable.jupiter},
 											{4, R.drawable.mars},	{0, R.drawable.sun},
 											{3, R.drawable.venus},	{2, R.drawable.mercury},
-											{1, R.drawable.moon} };
+											{1, R.drawable.moon},	{10, R.drawable.asc}  };
 //	private static int planet_res[][] = {	{1, R.drawable.moon},	{2, R.drawable.mercury},
 //											{3, R.drawable.venus},	{0, R.drawable.sun},
 //											{4, R.drawable.mars},	{5, R.drawable.jupiter},
-//											{6, R.drawable.saturn} };
+//											{6, R.drawable.saturn},	{10, R.drawable.asc} };
 
 	private static float mHour;
 	private static float mMinutes;
@@ -94,7 +96,15 @@ public class HoroClockService extends Service {
 		manager.updateAppWidget(thisWidget, remoteViews);
 
 		// 位置情報取得
-		//initializeLocation();
+		initializeLocation();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (mLocationManager != null && mLocationListener != null) {
+			mLocationManager.removeUpdates(mLocationListener);
+		}
 	}
 
 	// 初期読み込み
@@ -124,15 +134,15 @@ public class HoroClockService extends Service {
 			Display disp = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 			mAvailableWidth  = disp.getWidth();
 			mAvailableHeight = disp.getHeight();
-			Log.d(TAG, "{Initialize}(0) AvailabelWidth=" + mAvailableWidth + " AvailableHeight=" + mAvailableHeight);
-			Log.d(TAG, "{Initialize}(0) IntrinsicWidth=" + mDial.getIntrinsicWidth() + " IntrinsicHeight=" + mDial.getIntrinsicHeight());
+			//Log.d(TAG, "{Initialize}(0) AvailabelWidth=" + mAvailableWidth + " AvailableHeight=" + mAvailableHeight);
+			//Log.d(TAG, "{Initialize}(0) IntrinsicWidth=" + mDial.getIntrinsicWidth() + " IntrinsicHeight=" + mDial.getIntrinsicHeight());
 			if (mAvailableWidth >= mDial.getIntrinsicWidth())
 				mAvailableWidth  = CLOCK_SIZE;
 				//mAvailableWidth  = mDial.getIntrinsicWidth();
 			if (mAvailableHeight >= mDial.getIntrinsicHeight())
 				mAvailableHeight = CLOCK_SIZE;
 				//mAvailableHeight = mDial.getIntrinsicHeight();
-			Log.d(TAG, "{Initialize}(1) AvailabelWidth=" + mAvailableWidth + " AvailableHeight=" + mAvailableHeight);
+			//Log.d(TAG, "{Initialize}(1) AvailabelWidth=" + mAvailableWidth + " AvailableHeight=" + mAvailableHeight);
 		}
 
 		if (mPlanet == null) {
@@ -146,7 +156,8 @@ public class HoroClockService extends Service {
 
 	private Bitmap getClockBitmap(Context context) {
 		onTimeChanged();
-		Bitmap rtn = Bitmap.createBitmap(mAvailableWidth, mAvailableHeight, Bitmap.Config.ARGB_8888);
+		//Bitmap rtn = Bitmap.createBitmap(mAvailableWidth, mAvailableHeight, Bitmap.Config.ARGB_8888);
+		Bitmap rtn = Bitmap.createBitmap(mAvailableWidth, mAvailableHeight, Bitmap.Config.ARGB_4444);
 		onDraw(new Canvas(rtn));
 		return rtn;
 	}
@@ -175,19 +186,19 @@ public class HoroClockService extends Service {
 
 		int x = mAvailableWidth / 2;
 		int y = mAvailableHeight / 2;
-		Log.d(TAG, "{onDraw} x=" + x + " y=" + y);
+		//Log.d(TAG, "{onDraw} x=" + x + " y=" + y);
 
 		final Drawable dial = mDial;
 		//int w = dial.getIntrinsicWidth();
 		//int h = dial.getIntrinsicHeight();
 		int w = CLOCK_SIZE;
 		int h = CLOCK_SIZE;
-		Log.d(TAG, "{onDraw} w=" + w + " h=" + h);
+		//Log.d(TAG, "{onDraw} w=" + w + " h=" + h);
 
 		boolean scaled = false;
 
 		if (mAvailableWidth < w || mAvailableHeight < h) {
-			Log.d(TAG, "{onDraw} Scaling...");
+			//Log.d(TAG, "{onDraw} Scaling...");
 			scaled = true;
 			float scale = Math.min( (float) mAvailableWidth  / (float) w,
 									(float) mAvailableHeight / (float) h);
@@ -196,7 +207,7 @@ public class HoroClockService extends Service {
 		}
 
 		if (changed) {
-			Log.d(TAG, "{onDraw} Changed...");
+			//Log.d(TAG, "{onDraw} Changed...");
 			dial.setBounds(x - (w / 2), y - (h / 2), x + (w / 2), y + (h / 2));
 		}
 		dial.draw(canvas);
@@ -246,7 +257,7 @@ public class HoroClockService extends Service {
 		if (mLatitude == 0 && mLongitude == 0) {
 			planet_pos = planetCalc.planet_pos(Calendar.getInstance(), PlanetCalc.DEFAULT_PLACE);
 		} else {
-			planet_pos = planetCalc.planet_pos(Calendar.getInstance(), mLatitude, mLongitude);
+			planet_pos = planetCalc.planet_pos(Calendar.getInstance(), mLatitude / 180 * Math.PI, mLongitude / 180 * Math.PI);
 		}
 
 		int x = mAvailableWidth  / 2;
@@ -256,6 +267,8 @@ public class HoroClockService extends Service {
 		ArrayList<Float> draw_pos = new ArrayList<Float>();
 		final Drawable planet[] = new Drawable[mPlanet.length];
 		for (int i=0; i<planet.length; i++) {
+			if (mLatitude == 0 && mLongitude == 0 && planet_res[i][0] == 10)	// 緯度・経度が取れていない場合は、ASCを描画しない
+				continue;
 			canvas.save();
 			int pla_no = planet_res[i][0];
 			// 惑星の位置は、時計の９時から逆行
@@ -286,6 +299,26 @@ public class HoroClockService extends Service {
 			planet[i].draw(canvas);
 			canvas.restore();
 		}
+		//locationDraw(canvas, x, y);
+	}
+
+	@SuppressWarnings("unused")
+	private void locationDraw(Canvas canvas, int x, int y) {
+		if (mLatitude == 0 && mLongitude == 0)
+			return;
+		final int _f = 11;	// フォントサイズ
+		Paint paint = new Paint();
+		paint.setAntiAlias(true);
+		paint.setTextSize(_f);
+		paint.setColor(Color.WHITE);
+		paint.setAlpha(153);	// Alpha 40%
+		// paint.setTypeface(Typeface.MONOSPACE);
+		int _x = 73;
+		int _y = y;
+		canvas.drawText("Lat", _x, _y - 2,  paint);
+		canvas.drawText("Lon", _x, _y + _f, paint);
+		canvas.drawText("[" + String.format("%.2f", mLatitude) + "]",  _x + 22, _y - 2,  paint);
+		canvas.drawText("[" + String.format("%.2f", mLongitude) + "]", _x + 22, _y + _f, paint);
 	}
 
 	@SuppressWarnings("unused")
@@ -314,7 +347,7 @@ public class HoroClockService extends Service {
 		}
 	}
 
-	private final static float OVERLAP = 16;
+	private final static float OVERLAP = ICON_SIZE - 3;
 	private int chaldaeanPos(ArrayList<Float> draw_pos, float rot) {
 		int pos = 0;
 		for (float f : draw_pos) {
@@ -345,43 +378,67 @@ public class HoroClockService extends Service {
 		}
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private void initializeLocation() {
 		//位置情報サービスマネージャを取得
-		mLocationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+		if (mLocationManager == null)
+			mLocationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 		if (mLocationManager == null)
 			return;
 
-		final Criteria criteria = new Criteria();
-		criteria.setBearingRequired(false);		// 方位不要
-		criteria.setSpeedRequired(false);		// 速度不要
-		criteria.setAltitudeRequired(false);	// 高度不要
-		//使える中で最も条件にヒットする位置情報サービスを取得する
-		final String bestProvider = mLocationManager.getBestProvider(criteria, true);
+		String bestProvider = null;
+		for (String provider : mLocationManager.getAllProviders()) {
+			if (mLocationManager.isProviderEnabled(provider)) {
+				//Log.d(TAG, "{initializeLocation} Provider=[" + provider + "]");
+				try {
+					if (mLocationManager.getLastKnownLocation(provider) != null &&
+						mLocationManager.getLastKnownLocation(provider).getLatitude() > 0) {
+						bestProvider = provider;
+						break;
+					}
+				} catch (Exception e) {
+					Log.d(TAG, "{initializeLocation} Exception=[" + e.toString() + "]");
+				}
+				Log.d(TAG, "{initializeLocation} BEST Provider=[" + bestProvider + "]");
+				if (bestProvider == null) {
+					if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+						bestProvider = LocationManager.NETWORK_PROVIDER;
+					} else if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+						bestProvider = LocationManager.GPS_PROVIDER;
+					}
+				}
+			}
+		}
 		//以前に取得した位置情報を取得
-		final Location location = mLocationManager.getLastKnownLocation(bestProvider);
+		Location location = bestProvider != null ? mLocationManager.getLastKnownLocation(bestProvider) : null;
 		//位置情報の取得
 		setLocation(location);
-		mLocationListener = new LocationListener() {
-			@Override
-			public void onStatusChanged(String provider, int status, Bundle extras) {	}
-			@Override
-			public void onProviderEnabled(String provider) {	}
-			@Override
-			public void onProviderDisabled(String provider) {	}
-			@Override
-			public void onLocationChanged(Location location) {
-				setLocation(location);
+		if (mLocationListener == null) {
+			mLocationListener = new LocationListener() {
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) {	}
+				@Override
+				public void onProviderEnabled(String provider) {	}
+				@Override
+				public void onProviderDisabled(String provider) {	}
+				@Override
+				public void onLocationChanged(Location location) {
+					Log.d(TAG, "{onLocationChanged}");
+					setLocation(location);
+				}
+			};
+			//位置更新の際のリスナーを登録 (最少 1時間 1km の変化)
+			if (bestProvider != null) {
+				mLocationManager.requestLocationUpdates(bestProvider, 1000 * 3600, 1000, mLocationListener);
 			}
-		};
-		//位置更新の際のリスナーを登録 (最少 1時間 1km の変化)
-		mLocationManager.requestLocationUpdates(bestProvider, 1000, 1, mLocationListener);
+		}
 	}
 
 	private void setLocation(Location location) {
 		if (location != null) {
 			mLatitude  = location.getLatitude();
 			mLongitude = location.getLongitude();
+			Log.d(TAG, "{setLocation} Lat=[" + mLatitude + "] Lon=["+ mLongitude + "]");
 		}
 	}
 }
