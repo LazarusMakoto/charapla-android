@@ -272,7 +272,7 @@ public class HoroClockService extends Service {
 			canvas.save();
 			int pla_no = planet_res[i][0];
 			// 惑星の位置は、時計の９時から逆行
-			float rot = -((float)planet_pos[pla_no][0] * 30 + (float)planet_pos[pla_no][1]);
+			float rot = -((float)planet_pos[pla_no][0] * 30 + Math.abs((float)planet_pos[pla_no][1]));	// 逆行は"-"で表現されているので絶対値を取る
 			int shift = chaldaeanPos(draw_pos, rot);	// 描画位置が重なる場合シフトする
 			draw_pos.add(rot);	// 描画位置の保存
 			// canvas.rotate(rot, x -shift, y);
