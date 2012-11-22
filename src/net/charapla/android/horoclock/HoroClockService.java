@@ -72,6 +72,12 @@ public class HoroClockService extends Service {
 	}
 
 	@Override
+	public void onCreate() {
+		Log.d(TAG, "{onCreate}");
+		initialize(null);
+	}
+
+	@Override
 	public void onStart(Intent intent, int startId) {
 		String action = intent.getAction();
 		Log.d(TAG, "{onStart} Action=[" + action + "]");
@@ -136,10 +142,10 @@ public class HoroClockService extends Service {
 			mAvailableHeight = disp.getHeight();
 			//Log.d(TAG, "{Initialize}(0) AvailabelWidth=" + mAvailableWidth + " AvailableHeight=" + mAvailableHeight);
 			//Log.d(TAG, "{Initialize}(0) IntrinsicWidth=" + mDial.getIntrinsicWidth() + " IntrinsicHeight=" + mDial.getIntrinsicHeight());
-			if (mAvailableWidth >= mDial.getIntrinsicWidth())
+			if (mAvailableWidth >= mDial.getIntrinsicWidth() || mAvailableWidth == 0)
 				mAvailableWidth  = CLOCK_SIZE;
 				//mAvailableWidth  = mDial.getIntrinsicWidth();
-			if (mAvailableHeight >= mDial.getIntrinsicHeight())
+			if (mAvailableHeight >= mDial.getIntrinsicHeight() || mAvailableHeight == 0)
 				mAvailableHeight = CLOCK_SIZE;
 				//mAvailableHeight = mDial.getIntrinsicHeight();
 			//Log.d(TAG, "{Initialize}(1) AvailabelWidth=" + mAvailableWidth + " AvailableHeight=" + mAvailableHeight);
@@ -415,13 +421,9 @@ public class HoroClockService extends Service {
 		setLocation(location);
 		if (mLocationListener == null) {
 			mLocationListener = new LocationListener() {
-				@Override
 				public void onStatusChanged(String provider, int status, Bundle extras) {	}
-				@Override
 				public void onProviderEnabled(String provider) {	}
-				@Override
 				public void onProviderDisabled(String provider) {	}
-				@Override
 				public void onLocationChanged(Location location) {
 					Log.d(TAG, "{onLocationChanged}");
 					setLocation(location);

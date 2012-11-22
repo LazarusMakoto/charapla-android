@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 		package="net.charapla.android.horoclock"
-		android:versionCode="6"
-		android:versionName="0.2.0">
+		android:versionCode="7"
+		android:versionName="0.2.1">
 
     <uses-sdk android:minSdkVersion="4" />
     <!-- <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/> -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    	
+
 	<supports-screens
 		android:smallScreens="true"
 		android:normalScreens="true"
@@ -20,7 +20,7 @@
    	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name">
-		<!-- ダミーのActivity 
+		<!-- ダミーのActivity
 		<activity
 				android:name=".HoroClockActivity"
 				android:label="@string/app_name">
